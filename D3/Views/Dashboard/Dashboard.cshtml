@@ -1,0 +1,206 @@
+﻿@{
+    var user = ViewBag.user as User;
+    var Students = ViewBag.Students as List<Student>;
+    var Users = ViewBag.Users as List<User>;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <style>
+        .content {
+            margin-left: 270px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .table-container {
+            max-height: 500px;
+            margin-bottom: 20px;
+        }
+
+        .table-section {
+            display: none;
+        }
+
+            .table-section.active {
+                display: block;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Welcome to the Dashboard</h1>
+        <div class="mb-4">
+            @if (user?.Role == "Super Admin")
+            {
+                <button type="button" class="btn btn-outline-primary" onclick="showTable('users')">Users</button>
+            }
+            <button type="button" class="btn btn-outline-primary ml-3" onclick="showTable('students')">Students</button>
+        </div>
+
+        @if (Users != null)
+        {
+            <div class="table-container">
+                <div id="users-table" class="table-section">
+                    <h2>Users Table</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">UserName</th>
+                                <th scope="col">Role</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone Number</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var obj in Users)
+                            {
+                                <tr>
+                                    <td>@obj.UserName</td>
+                                    <td>@obj.Role</td>
+                                    <td>@obj.Email</td>
+                                    <td>@obj.PhoneNumber</td>
+                                    <td>
+                                        <a asp-controller="Dashboard" asp-action="EditUser" asp-route-id="@obj.Id" class="btn btn-warning btn-sm">Edit</a>
+                                        <form method="post" asp-controller="Dashboard" asp-action="DeleteUser" asp-route-id="@obj.Id" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @if (Students != null)
+        {
+            <div class="table-container">
+                <div id="students-table" class="table-section">
+                    <h2>Students Table</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">UserName</th>
+                                <th scope="col">Session</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">RollNumber</th>
+                                @if (user?.Role != "Clerk")
+                                {
+                                    <th scope="col">Action</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var obj in Students)
+                            {
+                                <tr>
+                                    <td>@obj.UserName</td>
+                                    <td>@obj.Session</td>
+                                    <td>@obj.Email</td>
+                                    <td>@obj.RollNumber</td>
+                                    @if (user?.Role != "Clerk")
+                                    {
+                                        <td>
+                                            <a asp-controller="Dashboard" asp-action="EditStudent" asp-route-id="@obj.Id" class="btn btn-warning btn-sm">Edit</a>
+                                            <form method="post" asp-controller="Dashboard" asp-action="DeleteStudent" asp-route-id="@obj.Id" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @if (user?.Role == "Super Admin")
+        {
+            <script>
+                document.getElementById('users-table').classList.add('active');
+            </script>
+        }
+        else
+        {
+            <script>
+                document.getElementById('students-table').classList.add('active');
+            </script>
+        }
+
+        <!-- Modal -->
+        <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @TempData["SuccessMessage"]
+                            </div>
+                        }
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["ErrorMessage"]
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function showTable(table) {
+            document.getElementById('users-table').classList.remove('active');
+            document.getElementById('students-table').classList.remove('active');
+
+
+            if (table === 'users') {
+                document.getElementById('users-table').classList.add('active');
+            } else if (table === 'students') {
+                document.getElementById('students-table').classList.add('active');
+            }
+        }
+
+        $(document).ready(function () {
+        @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+        {
+            <text>
+                    $('#messageModal').modal('show');
+            </text>
+        }
+                    });
+
+        var initialTable = '@TempData["InitialTable"]';
+
+        if (initialTable === 'users') {
+            showTable('users');
+        } else if (initialTable === 'students') {
+            showTable('students');
+            document.getElementById('students-table').classList.add('active');
+        }
+    </script>
+</body>
+</html>

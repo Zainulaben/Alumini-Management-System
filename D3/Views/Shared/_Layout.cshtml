@@ -1,0 +1,106 @@
+﻿@{
+    var user = ViewBag.user as User;
+    var Students = ViewBag.Students as List<Student>;
+    var Users = ViewBag.Users as List<User>;
+
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alumini Management system</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <style>
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #343a40;
+            color: white;
+            padding: 20px;
+        }
+
+            .sidebar h4 {
+                color: #adb5bd;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .sidebar .nav-link {
+                color: white;
+                font-size: 14px;
+                transition: background-color 0.3s ease;
+            }
+
+                .sidebar .nav-link:hover {
+                    background-color: #495057;
+                }
+
+                .sidebar .nav-link.active {
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                }
+
+        .logo {
+            display: block;
+            margin: 0 auto 30px;
+            width: 100px;
+            height: auto;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        @if (user?.Role == "Super Admin")
+        {
+            <img src="/images/superadmin.jpg" alt="Logo" class="logo mb-4">
+        }
+        else if(user?.Role == "Admin")
+        {
+            <img src="/images/admin.jpg" alt="Logo" class="logo mb-4">
+        }
+        else
+        {
+            <img src="/images/person.jpg" alt="Logo" class="logo mb-4">
+        }
+
+        @if (user != null)
+        {
+            <div class="user-info text-center mb-4">
+                <h5 style="font-weight: bold; letter-spacing: 1px;">@user.UserName</h5>
+                <p style="letter-spacing: 1px;">@user.Role</p>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link @(currentController == "Dashboard" && currentAction == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Dashboard">Dashboard</a>
+                </li>
+                @if (user.Role == "Super Admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "User" && currentAction == "AddUser" ? "active" : "")" asp-controller="User" asp-action="AddUser">Add User</a>
+                    </li>
+                }
+
+                @if (user.Role == "Super Admin" || user.Role == "Admin")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Student" && currentAction == "AddStudent" ? "active" : "")" asp-controller="Student" asp-action="AddStudent">Add Student</a>
+                    </li>
+                }
+                <li class="nav-item">
+                    <a class="nav-link @(currentController == "Login" && currentAction == "Logout" ? "active" : "")" asp-controller="Login" asp-action="Logout">Logout</a>
+                </li>
+            </ul>
+        }
+    </div>
+
+    @RenderBody()
+</body>
+</html>

@@ -1,0 +1,101 @@
+﻿@{
+    var user = ViewBag.user as User;
+    var Students = ViewBag.Students as List<Student>;
+    var Users = ViewBag.Users as List<User>;
+    var editUser = ViewBag.editUser as User;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+
+        .form-container {
+            min-width: 500px;
+            padding: 25px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            margin-left: 200px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .full-height {
+            height: 100%;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid full-height flex-center">
+        <div class="form-container">
+            <h2 class="form-header">Edit User</h2>
+
+            <form method="post" asp-controller="User" asp-action="EditUser">
+                <div class="form-group" hidden>
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" value="@editUser?.Id" required />
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="@editUser?.UserName" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" value="@editUser?.Password" required />
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="number" class="form-control" id="phone" name="phone" value="@editUser?.PhoneNumber" required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="@editUser?.Email" required />
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select class="form-control" id="role" name="role" required>
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Clerk">Clerk</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var editUserRole = "@(editUser?.Role)";
+
+            var roleSelect = document.getElementById("role");
+            for (var i = 0; i < roleSelect.options.length; i++) {
+                if (roleSelect.options[i].value === editUserRole) {
+                    roleSelect.options[i].selected = true;
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
